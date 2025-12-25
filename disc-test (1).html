@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISC Personality Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .intro p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .question-container:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .question {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            color: #555;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #e8edff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .result-card {
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .result-card.d-type {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .result-card.i-type {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .result-card.s-type {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .result-card.c-type {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .result-card h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-card p {
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .score-bars {
+            margin: 30px 0;
+        }
+
+        .score-bar {
+            margin-bottom: 20px;
+        }
+
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .bar-container {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 15px;
+            transition: width 1s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bar-fill.d { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
+        .bar-fill.i { background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); }
+        .bar-fill.s { background: linear-gradient(90deg, #27ae60 0%, #229954 100%); }
+        .bar-fill.c { background: linear-gradient(90deg, #3498db 0%, #2980b9 100%); }
+
+        .restart-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .characteristics {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .characteristics h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .characteristics ul {
+            list-style-position: inside;
+            line-height: 1.8;
+        }
+
+        .characteristics ul li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .question {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="quiz">
+            <h1>🐱 DISC Personality Test</h1>
+            <p class="subtitle">Discover Your Behavioral Style</p>
+            
+            <div class="intro">
+                <p>This test will help you understand your natural behavioral style according to the DISC model. Answer honestly based on how you naturally behave, not how you think you should behave. There are no right or wrong answers!</p>
+            </div>
+
+            <form id="discForm">
+                <!-- Question 1 -->
+                <div class="question-container">
+                    <div class="question">1. When facing a challenge, I:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q1" id="q1d" value="D">
+                            <label for="q1d">Take charge immediately and find a solution quickly</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" id="q1i" value="I">
+                            <label for="q1i">Get excited and rally others to help solve it together</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" id="q1s" value="S">
+                            <label for="q1s">Stay calm and work through it steadily</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" id="q1c" value="C">
+                            <label for="q1c">Analyze all options carefully before deciding</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-container">
+                    <div class="question">2. In meetings, I prefer to:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q2" id="q2d" value="D">
+                            <label for="q2d">Keep it short, make decisions, and move on</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" id="q2i" value="I">
+                            <label for="q2i">Brainstorm ideas and engage everyone</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" id="q2s" value="S">
+                            <label for="q2s">Listen to everyone and build consensus</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" id="q2c" value="C">
+                            <label for="q2c">Review data and ensure accuracy</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-container">
+                    <div class="question">3. My ideal work environment is:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q3" id="q3d" value="D">
+                            <label for="q3d">Fast-paced with lots of challenges</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" id="q3i" value="I">
+                            <label for="q3i">Collaborative and fun with variety</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" id="q3s" value="S">
+                            <label for="q3s">Stable and supportive with clear expectations</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" id="q3c" value="C">
+                            <label for="q3c">Organized with clear standards and processes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="question-container">
+                    <div class="question">4. When communicating, I tend to be:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q4" id="q4d" value="D">
+                            <label for="q4d">Direct and to the point</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" id="q4i" value="I">
+                            <label for="q4i">Enthusiastic and expressive</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" id="q4s" value="S">
+                            <label for="q4s">Patient and supportive</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" id="q4c" value="C">
+                            <label for="q4c">Precise and factual</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-container">
+                    <div class="question">5. Under pressure, I:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q5" id="q5d" value="D">
+                            <label for="q5d">Become more assertive and take control</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" id="q5i" value="I">
+                            <label for="q5i">Talk more and try to maintain optimism</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" id="q5s" value="S">
+                            <label for="q5s">Resist change and prefer familiar approaches</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" id="q5c" value="C">
+                            <label for="q5c">Focus even more on details and accuracy</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="question-container">
+                    <div class="question">6. I am motivated by:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q6" id="q6d" value="D">
+                            <label for="q6d">Results and winning</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" id="q6i" value="I">
+                            <label for="q6i">Recognition and social interaction</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" id="q6s" value="S">
+                            <label for="q6s">Stability and helping others</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" id="q6c" value="C">
+                            <label for="q6c">Quality and doing things correctly</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 7 -->
+                <div class="question-container">
+                    <div class="question">7. My greatest fear at work is:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q7" id="q7d" value="D">
+                            <label for="q7d">Being controlled or losing</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" id="q7i" value="I">
+                            <label for="q7i">Being ignored or rejected</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" id="q7s" value="S">
+                            <label for="q7s">Sudden change or conflict</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" id="q7c" value="C">
+                            <label for="q7c">Making mistakes or criticism</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 8 -->
+                <div class="question-container">
+                    <div class="question">8. When starting a new project, I:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q8" id="q8d" value="D">
+                            <label for="q8d">Jump right in and figure it out as I go</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" id="q8i" value="I">
+                            <label for="q8i">Get excited and share ideas with everyone</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" id="q8s" value="S">
+                            <label for="q8s">Prefer clear instructions and step-by-step guidance</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" id="q8c" value="C">
+                            <label for="q8c">Research thoroughly and plan everything</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 9 -->
+                <div class="question-container">
+                    <div class="question">9. In a team, I usually:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q9" id="q9d" value="D">
+                            <label for="q9d">Take the lead and drive results</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" id="q9i" value="I">
+                            <label for="q9i">Energize and inspire others</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" id="q9s" value="S">
+                            <label for="q9s">Support others and maintain harmony</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" id="q9c" value="C">
+                            <label for="q9c">Ensure quality and accuracy</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 10 -->
+                <div class="question-container">
+                    <div class="question">10. People would describe me as:</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q10" id="q10d" value="D">
+                            <label for="q10d">Decisive and confident</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" id="q10i" value="I">
+                            <label for="q10i">Outgoing and optimistic</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" id="q10s" value="S">
+                            <label for="q10s">Calm and dependable</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" id="q10c" value="C">
+                            <label for="q10c">Analytical and careful</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>Complete Test</button>
+            </form>
+        </div>
+
+        <div id="results" class="results">
+            <!-- Results will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('discForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const quizDiv = document.getElementById('quiz');
+        const resultsDiv = document.getElementById('results');
+        
+        // Track selected options
+        const options = document.querySelectorAll('.option');
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                // Remove selected class from siblings
+                const siblings = this.parentElement.querySelectorAll('.option');
+                siblings.forEach(sib => sib.classList.remove('selected'));
+                
+                // Add selected class to this option
+                this.classList.add('selected');
+                
+                // Check if all questions are answered
+                checkCompletion();
+            });
+        });
+
+        function checkCompletion() {
+            const totalQuestions = 10;
+            let answeredQuestions = 0;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                const answered = document.querySelector(`input[name="q${i}"]:checked`);
+                if (answered) answeredQuestions++;
+            }
+            
+            submitBtn.disabled = answeredQuestions < totalQuestions;
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateResults();
+        });
+
+        function calculateResults() {
+            const scores = { D: 0, I: 0, S: 0, C: 0 };
+            
+            // Calculate scores
+            for (let i = 1; i <= 10; i++) {
+                const answer = document.querySelector(`input[name="q${i}"]:checked`);
+                if (answer) {
+                    scores[answer.value]++;
+                }
+            }
+
+            // Calculate percentages
+            const total = 10;
+            const percentages = {
+                D: Math.round((scores.D / total) * 100),
+                I: Math.round((scores.I / total) * 100),
+                S: Math.round((scores.S / total) * 100),
+                C: Math.round((scores.C / total) * 100)
+            };
+
+            // Determine dominant type
+            const dominantType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+
+            displayResults(dominantType, percentages);
+        }
+
+        function displayResults(type, percentages) {
+            const typeInfo = {
+                D: {
+                    name: 'Dominance (D)',
+                    title: 'The Result-Driven Achiever',
+                    description: 'You are direct, decisive, and focused on results. You thrive on challenges, take charge in difficult situations, and aren\'t afraid to make tough decisions. You value efficiency and getting things done.',
+                    strengths: [
+                        'Takes initiative and leads naturally',
+                        'Makes quick decisions under pressure',
+                        'Challenges the status quo',
+                        'Focuses on bottom-line results',
+                        'Thrives in competitive environments'
+                    ],
+                    challenges: [
+                        'May come across as too blunt or aggressive',
+                        'Can be impatient with details or slow processes',
+                        'Might overlook people\'s feelings',
+                        'May resist being controlled or micromanaged'
+                    ],
+                    tips: [
+                        'Practice patience with those who need more time',
+                        'Remember to consider the emotional impact of decisions',
+                        'Delegate and trust others',
+                        'Take time to listen before deciding'
+                    ]
+                },
+                I: {
+                    name: 'Influence (I)',
+                    title: 'The Enthusiastic Communicator',
+                    description: 'You are outgoing, enthusiastic, and love interacting with people. You inspire others with your optimism, build relationships easily, and bring energy to any team. You value recognition and social connection.',
+                    strengths: [
+                        'Excellent at motivating and inspiring others',
+                        'Creates positive, energetic environments',
+                        'Builds relationships quickly and naturally',
+                        'Thinks creatively and innovatively',
+                        'Communicates with enthusiasm'
+                    ],
+                    challenges: [
+                        'May overlook details in favor of big picture',
+                        'Can be overly optimistic about timelines',
+                        'Might talk more than listen',
+                        'May struggle with routine tasks'
+                    ],
+                    tips: [
+                        'Build in time for follow-through and details',
+                        'Balance talking with active listening',
+                        'Set realistic deadlines',
+                        'Focus on completing tasks, not just starting them'
+                    ]
+                },
+                S: {
+                    name: 'Steadiness (S)',
+                    title: 'The Reliable Team Player',
+                    description: 'You are calm, supportive, and value stability. You create harmony in teams, are incredibly dependable, and prefer a steady, consistent pace. You excel at supporting others and maintaining peaceful environments.',
+                    strengths: [
+                        'Incredibly loyal and dependable',
+                        'Excellent listener and supporter',
+                        'Creates stable, harmonious environments',
+                        'Patient and empathetic',
+                        'Great at maintaining long-term relationships'
+                    ],
+                    challenges: [
+                        'May resist necessary changes',
+                        'Can struggle with confrontation',
+                        'Might say yes when should say no',
+                        'May not voice concerns or needs'
+                    ],
+                    tips: [
+                        'Practice advocating for yourself',
+                        'Embrace change as opportunity',
+                        'Set healthy boundaries',
+                        'Share your concerns when you have them'
+                    ]
+                },
+                C: {
+                    name: 'Conscientiousness (C)',
+                    title: 'The Quality-Focused Analyst',
+                    description: 'You are analytical, precise, and focused on accuracy. You value quality, follow systematic approaches, and ensure everything is done correctly. You excel at problem-solving and maintaining high standards.',
+                    strengths: [
+                        'Exceptional attention to detail',
+                        'Systematic and organized approach',
+                        'High standards of quality',
+                        'Excellent analytical and problem-solving skills',
+                        'Thorough research and planning'
+                    ],
+                    challenges: [
+                        'May get stuck in analysis paralysis',
+                        'Can be overly critical (of self and others)',
+                        'Might struggle with ambiguity',
+                        'May have difficulty with quick decisions'
+                    ],
+                    tips: [
+                        'Accept that perfection isn\'t always necessary',
+                        'Practice making decisions with incomplete data',
+                        'Balance analysis with action',
+                        'Remember to celebrate successes, not just identify flaws'
+                    ]
+                }
+            };
+
+            const info = typeInfo[type];
+
+            resultsDiv.innerHTML = `
+                <div class="result-card ${type.toLowerCase()}-type">
+                    <h2>${info.name}</h2>
+                    <h3>${info.title}</h3>
+                    <p>${info.description}</p>
+                </div>
+
+                <div class="score-bars">
+                    <h3 style="margin-bottom: 20px; color: #333;">Your DISC Profile:</h3>
+                    <div class="score-bar">
+                        <div class="score-label">
+                            <span>Dominance (D)</span>
+                            <span>${percentages.D}%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill d" style="width: ${percentages.D}%">${percentages.D}%</div>
+                        </div>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-label">
+                            <span>Influence (I)</span>
+                            <span>${percentages.I}%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill i" style="width: ${percentages.I}%">${percentages.I}%</div>
+                        </div>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-label">
+                            <span>Steadiness (S)</span>
+                            <span>${percentages.S}%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill s" style="width: ${percentages.S}%">${percentages.S}%</div>
+                        </div>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-label">
+                            <span>Conscientiousness (C)</span>
+                            <span>${percentages.C}%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-fill c" style="width: ${percentages.C}%">${percentages.C}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="characteristics">
+                    <h3>Your Strengths:</h3>
+                    <ul>
+                        ${info.strengths.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="characteristics">
+                    <h3>Potential Challenges:</h3>
+                    <ul>
+                        ${info.challenges.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="characteristics">
+                    <h3>Tips for Growth:</h3>
+                    <ul>
+                        ${info.tips.map(t => `<li>${t}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <button onclick="restartTest()" class="restart-btn">Take Test Again</button>
+            `;
+
+            quizDiv.style.display = 'none';
+            resultsDiv.style.display = 'block';
+
+            // Animate bars
+            setTimeout(() => {
+                document.querySelectorAll('.bar-fill').forEach(bar => {
+                    bar.style.width = bar.getAttribute('style').match(/width: (\d+)%/)[1] + '%';
+                });
+            }, 100);
+        }
+
+        function restartTest() {
+            form.reset();
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            submitBtn.disabled = true;
+            quizDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
